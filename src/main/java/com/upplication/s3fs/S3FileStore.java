@@ -8,7 +8,6 @@ import java.nio.file.attribute.FileStoreAttributeView;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.Owner;
-import com.google.common.collect.ImmutableList;
 
 public class S3FileStore extends FileStore implements Comparable<S3FileStore> {
 

@@ -11,7 +11,7 @@ import java.util.Properties;
 
 import static com.upplication.s3fs.S3FileSystemProvider.MULTIPART_UPLOAD_NUM_UPLOAD_THREADS;
 import static com.upplication.s3fs.S3FileSystemProvider.MULTIPART_UPLOAD_QUEUE_CAPACITY;
-import static com.upplication.s3fs.S3FileSystemProvider.MULTIPART_UPLOAD_NUM_STREAMS;
+//import static com.upplication.s3fs.S3FileSystemProvider.MULTIPART_UPLOAD_NUM_STREAMS;
 import static com.upplication.s3fs.S3FileSystemProvider.MULTIPART_UPLOAD_PART_SIZE;
 
 public class S3MultipartUploadOutputStream extends OutputStream {
@@ -20,13 +20,14 @@ public class S3MultipartUploadOutputStream extends OutputStream {
 
     private final StreamTransferManager manager;
 
-    private static final int DEFAULT_NUM_UPLOAD_THREADS = 1;
+    private static final int DEFAULT_NUM_UPLOAD_THREADS = 5;
 
-    private static final int DEFAULT_QUEUE_CAPACITY = 1;
+    //Note: 1 seems to give the best performance in my test (Brian Wang)
+    private static final int DEFAULT_QUEUE_CAPACITY = 5;
 
     private static final int DEFAULT_NUM_STREAMS = 1;
-
-    private static final int DEFAULT_PART_SIZE = 5;
+    //In MB
+    private static final int DEFAULT_PART_SIZE = 100;
 
     public S3MultipartUploadOutputStream(final AmazonS3 s3Client, final S3ObjectId objectId, final Properties properties) {
         this(
@@ -69,7 +70,10 @@ public class S3MultipartUploadOutputStream extends OutputStream {
             objectId.getBucket(),
             objectId.getKey(),
             s3Client,
-            getIntValue(properties, MULTIPART_UPLOAD_NUM_STREAMS, DEFAULT_NUM_STREAMS),
+            //This has to be 1, otherwise upload hangs in lib alex.mojaki.s3upload
+            //Take this out until further investigation.
+            //getIntValue(properties, MULTIPART_UPLOAD_NUM_STREAMS, DEFAULT_NUM_STREAMS),
+            DEFAULT_NUM_STREAMS, 
             getIntValue(properties, MULTIPART_UPLOAD_NUM_UPLOAD_THREADS, DEFAULT_NUM_UPLOAD_THREADS),
             getIntValue(properties, MULTIPART_UPLOAD_QUEUE_CAPACITY, DEFAULT_QUEUE_CAPACITY),
             getIntValue(properties, MULTIPART_UPLOAD_PART_SIZE, DEFAULT_PART_SIZE)

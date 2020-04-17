@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.collect.Sets.difference;
 import static com.upplication.s3fs.AmazonS3Factory.*;
 import static java.lang.String.format;
-import static java.lang.String.format;
 
 /**
  * Spec:
@@ -74,7 +73,11 @@ public class S3FileSystemProvider extends FileSystemProvider {
     public static final String CHARSET_KEY = "s3fs_charset";
     public static final String AMAZON_S3_FACTORY_CLASS = "s3fs_amazon_s3_factory";
     public static final String MULTIPART_UPLOAD_ENABLED = "s3fs_multipart_upload_enabled";
+    
+    //in MB!
     public static final String MULTIPART_UPLOAD_PART_SIZE = "s3fs_multipart_upload_part_size";
+    //Set this >1 would cause Hang in the 3rd party upload lib, this determines the task produders,which has
+    //This is at consumer side which very little impact on performance. Disable it to avoid confusion.
     public static final String MULTIPART_UPLOAD_NUM_STREAMS = "s3fs_multipart_upload_num_streams";
     public static final String MULTIPART_UPLOAD_QUEUE_CAPACITY = "s3fs_multipart_upload_queue_capacity";
     public static final String MULTIPART_UPLOAD_NUM_UPLOAD_THREADS = "s3fs_multipart_upload_num_upload_threads";
@@ -372,9 +375,6 @@ public class S3FileSystemProvider extends FileSystemProvider {
     @Override
     public InputStream newInputStream(Path path, OpenOption... options) throws IOException {
         LOGGER.debug("New input stream. path:{}, options:{}", path, options);
-
-        System.out.println("newInputStream");
-
         S3Path s3Path = toS3Path(path);
         String key = s3Path.getKey();
 
